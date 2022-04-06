@@ -1,0 +1,1801 @@
+swagger: '2.0'
+info:
+  title: Peaks Online Restful APIs
+  description: Document REST API endpoints for Peaks Online
+  version: 1.0.0-SNAPSHOT
+schemes:
+  - http
+basePath: /apis
+produces:
+  - application/json
+securityDefinitions:
+  jwt:
+    type: apiKey
+    name: authorization
+    in: header
+  cookie:
+    type: basic
+definitions:
+  Pagination:
+    type: object
+    properties:
+      page:
+        type: integer
+        format: int32
+        description: current page number
+      pageSize:
+        type: integer
+        format: int32
+        description: size of current page
+      totalPages:
+        type: integer
+        format: int32
+        description: total number of available pages
+      totalItems:
+        type: integer
+        format: int32
+        description: total number of available items
+  User:
+    type: object
+    properties:
+      userId:
+        type: string
+        format: uuid
+      username:
+        type: string
+      password:
+        type: string
+        description: 'password of user, will be encrypted when reading back from server'
+      email:
+        type: string
+        format: email address
+      fullName:
+        type: string
+        description: user's full name
+      role:
+        type: string
+        enum:
+          - admin
+          - user
+      created:
+        type: integer
+        format: int64
+        description: time in seconds (long)
+      lastUpdated:
+        type: integer
+        format: int64
+        description: time in seconds (long)
+  UserPageResult:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/User'
+      pagination:
+        $ref: '#/definitions/Pagination'
+  Protein:
+    title: Protein
+    type: object
+    properties:
+      id:
+        type: string
+      accession:
+        type: string
+      description:
+        type: string
+      pValue:
+        type: number
+      cluster:
+        type: integer
+        minimum: 0
+        maximum: 4294967295
+      coverage:
+        type: number
+      mass:
+        type: number
+      modifications:
+        type: array
+        items:
+          $ref: '#/definitions/AbbreviatedModification'
+      samples:
+        type: array
+        items:
+          type: object
+          properties:
+            sampleCoverage:
+              type: number
+            sampleArea:
+              type: number
+            sampleSpec:
+              type: integer
+              minimum: 0
+              maximum: 4294967295
+      peptides:
+        type: integer
+        minimum: 0
+        maximum: 4294967295
+      unique:
+        type: integer
+        minimum: 0
+        maximum: 4294967295
+  AbbreviatedModification:
+    title: AbbreviatedModification
+    type: object
+    properties:
+      name:
+        type: string
+      abbreviation:
+        type: string
+      monoMass:
+        type: number
+  Peptide:
+    title: Peptide
+    type: object
+    properties:
+      sequence:
+        type: string
+      mass:
+        type: number
+      length:
+        type: integer
+        minimum: 0
+        maximum: 4294967295
+      modifications:
+        type: array
+        items:
+          $ref: '#/definitions/AbbreviatedModification'
+      proteinId:
+        type: array
+        items:
+          type: string
+      samples:
+        type: array
+        items:
+          type: object
+          properties:
+            fractions:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  psms:
+                    type: array
+                    items:
+                      title: PSM
+                      type: object
+                      properties:
+                        scannum:
+                          type: integer
+                          minimum: 0
+                          maximum: 4294967295
+                        mz:
+                          type: number
+                        z:
+                          type: integer
+                          minimum: 0
+                          maximum: 4294967295
+                        retentionTime:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                        area:
+                          type: number
+                        pValue:
+                          type: number
+                        ppm:
+                          type: number
+                        engine:
+                          title: Engine
+                          type: string
+                          enum:
+                            - PEAKS
+                            - SPIDER
+                            - PEAKSPTM
+                        featureId:
+                          type: integer
+                          minimum: 0
+                          maximum: 4294967295
+                        aScore:
+                          type: array
+                          items:
+                            type: number
+  ProteinPeptide:
+    title: ProteinPeptide
+    type: object
+    properties:
+      protein:
+        $ref: '#/definitions/Protein'
+      peptides:
+        type: array
+        items:
+          title: SupportPeptide
+          type: object
+          properties:
+            peptide:
+              $ref: '#/definitions/Peptide'
+            start:
+              type: integer
+              minimum: 0
+              maximum: 4294967295
+            end:
+              type: integer
+              minimum: 0
+              maximum: 4294967295
+            unique:
+              type: boolean
+      proteinSequence:
+        type: string
+  IonType:
+    title: IonType
+    type: string
+    enum:
+      - A
+      - B
+      - C
+      - X
+      - Y
+      - Z
+      - Z_PRIME
+      - IMMONIUM
+      - PRECURSOR
+      - A_MINUS_H2O
+      - B_MINUS_H2O
+      - C_MINUS_H2O
+      - X_MINUS_H2O
+      - Y_MINUS_H2O
+      - Z_MINUS_H2O
+      - Z_PRIME_MINUS_H2O
+      - A_MINUS_NH3
+      - B_MINUS_NH3
+      - C_MINUS_NH3
+      - X_MINUS_NH3
+      - Y_MINUS_NH3
+      - Z_MINUS_NH3
+      - Z_PRIME_MINUS_NH3
+      - A_CHARGE2
+      - B_CHARGE2
+      - C_CHARGE2
+      - X_CHARGE2
+      - Y_CHARGE2
+      - Z_CHARGE2
+      - Z_PRIME_CHARGE2
+      - C_MINUS_H
+  PeptideIonMatch:
+    title: PeptideIonMatch
+    type: object
+    properties:
+      sequence:
+        type: string
+      fractionObservedIons:
+        type: object
+        additionalProperties:
+          title: FractionObservedIons
+          type: object
+          properties:
+            scanumObservedIons:
+              type: object
+              additionalProperties:
+                title: ObservedIons
+                type: object
+                properties:
+                  ions:
+                    type: array
+                    items:
+                      title: Ion
+                      type: object
+                      properties:
+                        type:
+                          $ref: '#/definitions/IonType'
+                        mz:
+                          type: number
+                        h:
+                          type: number
+                        pos:
+                          type: integer
+                          minimum: 0
+                          maximum: 4294967295
+                  spectrum:
+                    title: Spectrum
+                    type: object
+                    properties:
+                      mz:
+                        type: array
+                        items:
+                          type: number
+                      intensity:
+                        type: array
+                        items:
+                          type: number
+                      precursorMz:
+                        type: number
+                  mz:
+                    type: number
+                  z:
+                    type: integer
+                    minimum: 0
+                    maximum: 4294967295
+                  retentionTime:
+                    type: integer
+                    minimum: 0
+                    maximum: 9007199254740991
+      theoreticalIons:
+        type: array
+        items:
+          title: TheoreticalIons
+          type: object
+          properties:
+            type:
+              $ref: '#/definitions/IonType'
+            mz:
+              type: array
+              items:
+                type: number
+  ScanDenovoCandidate:
+    title: ScanDenovoCandidate
+    type: object
+    properties:
+      fractionId:
+        type: string
+      scannum:
+        type: integer
+        minimum: 0
+        maximum: 4294967295
+      mz:
+        type: number
+      z:
+        type: integer
+        minimum: 0
+        maximum: 4294967295
+      retentionTime:
+        type: integer
+        minimum: 0
+        maximum: 9007199254740991
+      denovoCandidates:
+        type: array
+        items:
+          title: DenovoCandidate
+          type: object
+          properties:
+            sequence:
+              type: string
+            mass:
+              type: number
+            length:
+              type: integer
+              minimum: 0
+              maximum: 4294967295
+            area:
+              type: number
+            ppm:
+              type: number
+            alc:
+              type: number
+            positionalConfidence:
+              type: array
+              items:
+                type: number
+            modifications:
+              type: array
+              items:
+                title: AbbreviatedModification
+                type: object
+                properties:
+                  name:
+                    type: string
+                  abbreviation:
+                    type: string
+                  monoMass:
+                    type: number
+      activationMethod:
+        title: ActivationMethod
+        type: string
+        enum:
+          - UNDEFINED
+          - CID
+          - HCD
+          - ECD
+          - MIX
+          - PQD
+          - IRMPD
+  SampleScanStats:
+    title: SampleScanStats
+    type: object
+    properties:
+      sampleIndex:
+        type: integer
+        minimum: 0
+        maximum: 4294967295
+      ms1Count:
+        type: integer
+        minimum: 0
+        maximum: 4294967295
+      ms2Count:
+        type: integer
+        minimum: 0
+        maximum: 4294967295
+  PeptideAndDenovoCandidates:
+    title: PeptideAndDenovoCandidates
+    type: object
+    properties:
+      peptide:
+        $ref: '#/definitions/Peptide'
+      scanDenovoCandidate:
+        $ref: '#/definitions/ScanDenovoCandidate'
+  FeatureVectorProfile:
+    title: FeatureVectorProfile
+    type: object
+    properties:
+      area:
+        type: number
+      ratio:
+        type: number
+  FeatureVector:
+    title: FeatureVector
+    type: object
+    properties:
+      peptide:
+        type: string
+      quality:
+        type: number
+      significance:
+        type: number
+      ppm:
+        type: number
+      sampleProfiles:
+        type: array
+        items:
+          $ref: '#/definitions/FeatureVectorProfile'
+      groupProfiles:
+        type: array
+        items:
+          $ref: '#/definitions/FeatureVectorProfile'
+      accession:
+        type: array
+        items:
+          type: string
+      modifications:
+        type: array
+        items:
+          $ref: '#/definitions/AbbreviatedModification'
+      positionOfModifications:
+        type: array
+        items:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+      rtMin:
+        type: number
+      rtMax:
+        type: number
+      rtMean:
+        type: number
+      z:
+        type: number
+      idCount:
+        type: integer
+        minimum: 0
+        maximum: 4294967295
+      mz:
+        type: number
+      sampleMzs:
+        type: array
+        items:
+          type: number
+      sampleRtMeans:
+        type: array
+        items:
+          type: number
+
+  SupportPeptideFeatureVector:
+      title: SupportPeptideFeatureVector
+      type: object
+      properties:
+        peptideFeatureVector:
+          $ref: '#/definitions/PeptideFeatureVector'
+        start:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+        end:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+      used:
+        type: boolean
+      accession:
+        type: string
+      proteinGroup:
+        type: integer
+        minimum: 0
+        maximum: 4294967295
+  ProteinFeatureVector:
+      title: ProteinFeatureVector
+      type: object
+      properties:
+        cluster:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+        accession:
+          type: string
+        significance:
+          type: number
+        coverage:
+          type: number
+        peptideCount:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+        uniqueCount:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+        avgMass:
+          type: number
+        modifications:
+          type: array
+          items:
+            $ref: '#/definitions/AbbreviatedModification'
+        sampleProfiles:
+          type: array
+          items:
+            $ref: '#/definitions/FeatureVectorProfile'
+        groupProfiles:
+          type: array
+          items:
+            $ref: '#/definitions/FeatureVectorProfile'
+        description:
+          type: string
+  PeptideFeatureVector:
+    title: PeptideFeatureVector
+    type: object
+    properties:
+      peptide:
+        type: string
+      quality:
+        type: number
+      significance:
+        type: number
+      ppm:
+        type: number
+      vectorCount:
+        type: integer
+        minimum: 0
+        maximum: 4294967295
+      sampleProfiles:
+        type: array
+        items:
+          $ref: '#/definitions/FeatureVectorProfile'
+      groupProfiles:
+        type: array
+        items:
+          $ref: '#/definitions/FeatureVectorProfile'
+      accession:
+        type: array
+        items:
+          type: string
+      modifications:
+        type: array
+        items:
+          $ref: '#/definitions/AbbreviatedModification'
+      positionOfModifications:
+        type: array
+        items:
+          type: integer
+          minimum: 0
+          maximum: 4294967295
+
+responses:
+  UnauthorizedError:
+    description: do not have permission to access this endpoint
+  BadRequestError:
+    description: request contains invalid data that is not acceptable to server
+  InternalError:
+    description: server failed when trying to handle the request
+  NotFoundError:
+    description: requested data does not exist on server
+  ProteinResponse:
+    description: >-
+      application/x-protobuf (same structure as json, see proto file)
+
+
+      application/json (see example)
+
+
+      text/csv (see column list)
+      
+      0. Protein Group
+        
+      0. Protein ID
+    
+      0. Accession
+      
+      0. -10logP
+    
+      0. Coverage(%)
+      
+      0. #Peptides
+      
+      0. #Unique
+      
+      0. PTM
+      
+      0. Average Mass
+      
+      0. Description
+    schema:
+      type: array
+      items:
+        $ref: '#/definitions/Protein'
+  PeptideResponse:
+    description: >-
+      application/x-protobuf (same structure as json, see proto file)
+
+
+      application/json (see example)
+
+
+      text/csv (see column list)
+      
+      0. Peptide
+      
+      0. Mass
+      
+      0. Length
+      
+      0. Area {sample1}, ... Area {sampleN}
+      
+      0. #Spec
+      
+      0. #Spec {sample1}, ... #Spec {sampleN}
+
+      0. PTM
+    schema:
+      type: array
+      items:
+        $ref: '#/definitions/Peptide'
+  ProteinPeptideResponse:
+    description: >-
+      application/x-protobuf (same structure as json, see proto file)
+
+
+      application/json (see example)
+
+
+      text/csv (see column list)
+      
+      0. Protein Group
+      
+      0. Protein ID
+      
+      0. Accession
+      
+      0. Peptide
+      
+      0. Unique (Y/N)
+      
+      0. -10lgP
+      
+      0. Mass
+      
+      0. Length
+      
+      0. ppm
+      
+      0. m/z
+      
+      0. z
+      
+      0. RT
+      
+      0. Area {sample1}, ... Area {sampleN}
+      
+      0. Fraction
+      
+      0. Scan
+      
+      0. #Spec
+      
+      0. #Spec {sample1}, ... #Spec {sampleN}
+      
+      0. Start
+      
+      0. End
+      
+      0. PTM
+      
+      0. AScore
+    schema:
+      type: array
+      items:
+        $ref: '#/definitions/ProteinPeptide'
+  PeptideIonMatchResponse:
+    description: >-
+      application/x-protobuf (same structure as json, see proto file)
+
+      application/json (see example)
+    schema:
+      type: array
+      items:
+        $ref: '#/definitions/PeptideIonMatch'
+  ScanDenovoResponse:
+    description: >-
+      application/x-protobuf (same structure as json, see proto file)
+
+
+      application/json (see example)
+
+
+      text/csv (see column list)
+
+      0. Fraction
+
+      0. Scan
+
+      0. Peptide
+
+      0. Tag length
+
+      0. ALC (%)
+
+      0. Length
+
+      0. m/z
+
+      0. z
+
+      0. RT
+
+      0. Area
+
+      0. Mass
+
+      0. ppm
+
+      0. PTM
+
+      0. local confidence (%)
+
+      0. mode
+    schema:
+      type: array
+      items:
+        $ref: '#/definitions/ScanDenovoCandidate'
+  SampleScanStatsResponse:
+    description: >-
+      application/x-protobuf (same structure as json, see proto file)
+
+
+      application/json (see example)
+    schema:
+      type: array
+      items:
+        $ref: '#/definitions/SampleScanStats'
+  PeptideAndDenovoCandidatesResponse:
+    description: >-
+      application/x-protobuf (same structure as json, see proto file)
+
+
+      application/json (see example)
+    schema:
+      type: array
+      items:
+        $ref: '#/definitions/PeptideAndDenovoCandidates'
+  ProteinFeatureVectorResponse:
+    description: >-
+      application/x-protobuf (same structure as json, see proto file)
+
+
+      application/json (see example)
+    schema:
+      type: array
+      items:
+        $ref: '#/definitions/ProteinFeatureVector'
+  PeptideFeatureVectorResponse:
+    description: >-
+      application/x-protobuf (same structure as json, see proto file)
+
+
+      application/json (see example)
+    schema:
+      type: array
+      items:
+        $ref: '#/definitions/PeptideFeatureVector'
+  FeatureVectorResponse:
+    description: >-
+      application/x-protobuf (same structure as json, see proto file)
+
+
+      application/json (see example)
+    schema:
+      type: array
+      items:
+        $ref: '#/definitions/FeatureVector'
+  SupportPeptideVectorResponse:
+    description: >-
+      application/x-protobuf (same structure as json, see proto file)
+
+
+      application/json (see example)
+    schema:
+      type: array
+      items:
+        $ref: '#/definitions/SupportPeptideFeatureVector'
+parameters:
+  fraction.ids:
+    name: fraction.ids
+    in: query
+    description: limit query to fractions
+    type: string
+    format: encoded UUIDs
+  denovo.minAlc:
+    name: denovo.minAlc
+    in: query
+    description: minimum average positional confidence (ALC).
+    type: number
+  psm.minPValue:
+    name: psm.minPValue
+    in: query
+    description: minimum peptide -10lgP
+    type: number
+  proteinHit.minPValue:
+    name: proteinHit.minPValue
+    in: query
+    description: minimum protein -10lgP
+    type: number
+  proteinHit.minUniquePeptides:  
+    name: proteinHit.minUniquePeptides
+    in: query
+    description: minimum uniqiue peptide in protein
+    type: integer
+  proteinHit.includeDecoy:
+    name: proteinHit.includeDecoy
+    in: query
+    description: whether to include decoys proteins
+    type: boolean
+  topPsm:
+    name: topPsm
+    in: query
+    description: Limit PSM, by only returning up to this number of PSMs with highest pValue.
+    type: integer
+  topDenovoCandidate:
+    name: topDenovoCandidate
+    in: query
+    description: Limit denovo candidates, by only returning up to this number of denovoCandidates with highest ALC.
+    type: integer
+paths:
+  '/query/sampleScanStats/{projectId}':
+    get:
+      tags:
+        - query
+      summary: query scan statistics per sample
+      produces:
+        - text/csv
+        - application/json
+        - application/x-protobuf
+      parameters:
+        - name: Accept
+          in: header
+          description: request format
+          type: string
+          enum:
+            - application/json
+            - application/x-protobuf
+        - name: projectId
+          in: path
+          description: id of project
+          required: true
+          type: string
+          format: uuid
+        - $ref: '#/parameters/fraction.ids'
+      responses:
+        '200':
+          $ref: '#/responses/SampleScanStatsResponse'
+        '400':
+          $ref: '#/responses/BadRequestError'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+      security:
+        - jwt: []
+        - cookie: []
+  '/query/denovo/{projectId}':
+    get:
+      tags:
+        - query
+      summary: query denovo candidates within project
+      produces:
+        - text/csv
+        - application/json
+        - application/x-protobuf
+      parameters:
+        - name: Accept
+          in: header
+          description: request format
+          type: string
+          enum:
+            - text/csv
+            - application/json
+            - application/x-protobuf
+        - name: projectId
+          in: path
+          description: id of project
+          required: true
+          type: string
+          format: uuid
+        - $ref: '#/parameters/topDenovoCandidate'
+        - $ref: '#/parameters/denovo.minAlc'
+        - $ref: '#/parameters/fraction.ids'
+      responses:
+        '200':
+          $ref: '#/responses/ScanDenovoResponse'
+        '400':
+          $ref: '#/responses/BadRequestError'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+      security:
+        - jwt: []
+        - cookie: []
+  '/query/denovoOnly/{projectId}':
+    get:
+      tags:
+        - query
+      summary: query denovo candidates for scans that have no qualifying protein.
+      produces:
+        - text/csv
+        - application/json
+        - application/x-protobuf
+      parameters:
+        - name: Accept
+          in: header
+          description: request format
+          type: string
+          enum:
+            - text/csv
+            - application/json
+            - application/x-protobuf
+        - name: projectId
+          in: path
+          description: id of project
+          required: true
+          type: string
+          format: uuid
+        - $ref: '#/parameters/topDenovoCandidate'
+        - $ref: '#/parameters/denovo.minAlc'
+        - $ref: '#/parameters/fraction.ids'
+      security:
+        - jwt: []
+        - cookie: []
+  '/query/denovoOnly/{projectId}/{fractionId}/{scannum}':
+    get:
+      tags:
+        - query
+      summary: query denovo candidates for scans that have no qualifying protein.
+      produces:
+        - text/csv
+        - application/json
+        - application/x-protobuf
+      parameters:
+        - name: Accept
+          in: header
+          description: request format
+          type: string
+          enum:
+            - text/csv
+            - application/json
+            - application/x-protobuf
+        - name: projectId
+          in: path
+          description: id of project
+          required: true
+          type: string
+          format: uuid
+        - name: fractionId
+          in: path
+          description: id of fraction
+          required: true
+          type: string
+          format: uuid
+        - name: scannum
+          in: path
+          description: scan number
+          required: true
+          type: integer
+        - $ref: '#/parameters/topDenovoCandidate'
+        - $ref: '#/parameters/denovo.minAlc'
+        - $ref: '#/parameters/fraction.ids'
+      security:
+        - jwt: []
+        - cookie: []
+  '/query/denovo-ionMatch/{projectId}':
+    get:
+      tags:
+        - query
+      summary: Ion matches for denovoCandidates.
+      produces:
+        - text/csv
+        - application/json
+      parameters:
+        - name: Accept
+          in: header
+          description: request format
+          type: string
+          enum:
+            - text/csv
+            - application/json
+            - application/x-protobuf
+        - name: projectId
+          in: path
+          description: id of project
+          required: true
+          type: string
+          format: uuid
+        - $ref: '#/parameters/denovo.minAlc'
+        - $ref: '#/parameters/fraction.ids'
+        - $ref: '#/parameters/psm.minPValue'
+        - $ref: '#/parameters/proteinHit.minPValue'
+        - $ref: '#/parameters/proteinHit.minUniquePeptides'
+      responses:
+        '200':
+          $ref: '#/responses/ScanDenovoResponse'
+        '400':
+          $ref: '#/responses/BadRequestError'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+      security:
+        - jwt: []
+        - cookie: []
+  '/query/protein/{projectId}':
+    get:
+      tags:
+        - query
+      summary: query proteins within project
+      produces:
+        - text/csv
+        - application/json
+        - application/x-protobuf
+      parameters:
+        - name: Accept
+          in: header
+          description: request format
+          type: string
+          enum:
+            - text/csv
+            - application/json
+            - application/x-protobuf
+        - name: projectId
+          in: path
+          description: id of project
+          required: true
+          type: string
+          format: uuid
+        - $ref: '#/parameters/fraction.ids'
+        - $ref: '#/parameters/psm.minPValue'
+        - $ref: '#/parameters/proteinHit.minPValue'
+        - $ref: '#/parameters/proteinHit.minUniquePeptides'
+      responses:
+        '200':
+          $ref: '#/responses/ProteinResponse'
+        '400':
+          $ref: '#/responses/BadRequestError'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+      security:
+        - jwt: []
+        - cookie: []
+  '/query/protein/{projectId}/{proteinId}':
+    get:
+      tags:
+        - query
+      summary: query protein within project
+      produces:
+        - text/csv
+        - application/json
+        - application/x-protobuf
+      parameters:
+        - name: Accept
+          in: header
+          description: request format
+          type: string
+          enum:
+            - text/csv
+            - application/json
+            - application/x-protobuf
+        - name: projectId
+          in: path
+          description: id of project
+          required: true
+          type: string
+          format: uuid
+        - name: proteinId
+          in: path
+          description: id of protein
+          required: true
+          type: string
+          format: encoded
+        - $ref: '#/parameters/fraction.ids'
+        - $ref: '#/parameters/psm.minPValue'
+        - $ref: '#/parameters/proteinHit.minPValue'
+        - $ref: '#/parameters/proteinHit.minUniquePeptides'
+      responses:
+        '200':
+          $ref: '#/responses/ProteinResponse'
+        '400':
+          $ref: '#/responses/BadRequestError'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+      security:
+        - jwt: []
+        - cookie: []
+  '/query/protein-peptide/{projectId}':
+    get:
+      tags:
+        - query
+      summary: query proteins with supporting pepetides within project
+      produces:
+        - text/csv
+        - application/json
+        - application/x-protobuf
+      parameters:
+        - name: Accept
+          in: header
+          description: request format
+          type: string
+          enum:
+            - text/csv
+            - application/json
+            - application/x-protobuf
+        - name: projectId
+          in: path
+          description: id of project
+          required: true
+          type: string
+          format: uuid
+        - $ref: '#/parameters/topPsm'
+        - $ref: '#/parameters/fraction.ids'
+        - $ref: '#/parameters/psm.minPValue'
+        - $ref: '#/parameters/proteinHit.minPValue'
+        - $ref: '#/parameters/proteinHit.minUniquePeptides'
+      responses:
+        '200':
+          $ref: '#/responses/ProteinPeptideResponse'
+        '400':
+          $ref: '#/responses/BadRequestError'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+      security:
+        - jwt: []
+        - cookie: []
+  '/query/protein-peptide/{projectId}/{proteinId}':
+    get:
+      tags:
+        - query
+      summary: query protein with supporting pepetides within project
+      produces:
+        - text/csv
+        - application/json
+        - application/x-protobuf
+      parameters:
+        - name: Accept
+          in: header
+          description: request format
+          type: string
+          enum:
+            - text/csv
+            - application/json
+            - application/x-protobuf
+        - name: projectId
+          in: path
+          description: id of project
+          required: true
+          type: string
+          format: uuid
+        - name: proteinId
+          in: path
+          description: id of project
+          required: true
+          type: string
+          format: encoded
+        - $ref: '#/parameters/topPsm'
+        - $ref: '#/parameters/fraction.ids'
+        - $ref: '#/parameters/psm.minPValue'
+        - $ref: '#/parameters/proteinHit.minPValue'
+        - $ref: '#/parameters/proteinHit.minUniquePeptides'
+      responses:
+        '200':
+          $ref: '#/responses/ProteinPeptideResponse'
+        '400':
+          $ref: '#/responses/BadRequestError'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+      security:
+        - jwt: []
+        - cookie: []
+  '/query/peptide/{projectId}':
+    get:
+      tags:
+        - query
+      summary: query pepetides within project
+      produces:
+        - text/csv
+        - application/json
+        - application/x-protobuf
+      parameters:
+        - name: Accept
+          in: header
+          description: request format
+          type: string
+          enum:
+            - text/csv
+            - application/json
+            - application/x-protobuf
+        - name: projectId
+          in: path
+          description: id of project
+          required: true
+          type: string
+          format: uuid
+        - $ref: '#/parameters/topPsm'
+        - $ref: '#/parameters/fraction.ids'
+        - $ref: '#/parameters/psm.minPValue'
+        - $ref: '#/parameters/proteinHit.minPValue'
+        - $ref: '#/parameters/proteinHit.minUniquePeptides'
+      responses:
+        '200':
+          $ref: '#/responses/PeptideResponse'
+        '400':
+          $ref: '#/responses/BadRequestError'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+      security:
+        - jwt: []
+        - cookie: []
+  '/query/peptide/{projectId}/{peptide}':
+    get:
+      tags:
+        - query
+      summary: query pepetide within project
+      produces:
+        - text/csv
+        - application/json
+        - application/x-protobuf
+      parameters:
+        - name: Accept
+          in: header
+          description: request format
+          type: string
+          enum:
+            - text/csv
+            - application/json
+            - application/x-protobuf
+        - name: projectId
+          in: path
+          description: id of project
+          required: true
+          type: string
+          format: uuid
+        - name: peptide
+          in: path
+          description: peptide sequence
+          required: true
+          type: string
+        - $ref: '#/parameters/topPsm'
+        - $ref: '#/parameters/fraction.ids'
+        - $ref: '#/parameters/psm.minPValue'
+        - $ref: '#/parameters/proteinHit.minPValue'
+        - $ref: '#/parameters/proteinHit.minUniquePeptides'
+      responses:
+        '200':
+          $ref: '#/responses/PeptideResponse'
+        '400':
+          $ref: '#/responses/BadRequestError'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+      security:
+        - jwt: []
+        - cookie: []
+  '/query/peptide-denovoOnly/{projectId}':
+    get:
+      tags:
+        - query
+      summary: query pepetides and denovo only candidates within project
+      produces:
+        - application/json
+        - application/x-protobuf
+      parameters:
+        - name: Accept
+          in: header
+          description: request format
+          type: string
+          enum:
+            - text/csv
+            - application/json
+            - application/x-protobuf
+        - name: projectId
+          in: path
+          description: id of project
+          required: true
+          type: string
+          format: uuid
+        - $ref: '#/parameters/topPsm'
+        - $ref: '#/parameters/topDenovoCandidate'
+        - $ref: '#/parameters/fraction.ids'
+        - $ref: '#/parameters/denovo.minAlc'
+        - $ref: '#/parameters/psm.minPValue'
+        - $ref: '#/parameters/proteinHit.minPValue'
+        - $ref: '#/parameters/proteinHit.minUniquePeptides'
+      responses:
+        '200':
+          $ref: '#/responses/PeptideAndDenovoCandidatesResponse'
+        '400':
+          $ref: '#/responses/BadRequestError'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+      security:
+        - jwt: []
+        - cookie: []
+  '/query/peptide-ionmatch/{projectId}':
+    get:
+      tags:
+        - query
+      summary: query ion matches within project
+      produces:
+        - application/json
+        - application/x-protobuf
+      parameters:
+        - name: Accept
+          in: header
+          description: request format
+          type: string
+          enum:
+            - application/json
+            - application/x-protobuf
+        - name: projectId
+          in: path
+          description: id of project
+          required: true
+          type: string
+          format: uuid
+        - $ref: '#/parameters/fraction.ids'
+        - $ref: '#/parameters/psm.minPValue'
+        - $ref: '#/parameters/proteinHit.minPValue'
+        - $ref: '#/parameters/proteinHit.minUniquePeptides'
+      responses:
+        '200':
+          $ref: '#/responses/PeptideIonMatchResponse'
+        '400':
+          $ref: '#/responses/BadRequestError'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+      security:
+        - jwt: []
+        - cookie: []
+  '/query/peptide-ionmatch/{projectId}/{peptide}':
+    get:
+      tags:
+        - query
+      summary: query ion matches of peptide within project
+      produces:
+        - application/json
+        - application/x-protobuf
+      parameters:
+        - name: Accept
+          in: header
+          description: request format
+          type: string
+          enum:
+            - application/json
+            - application/x-protobuf
+        - name: projectId
+          in: path
+          description: id of project
+          required: true
+          type: string
+          format: uuid
+        - name: peptide
+          in: path
+          description: peptide sequence
+          required: true
+          type: string
+        - $ref: '#/parameters/fraction.ids'
+        - $ref: '#/parameters/psm.minPValue'
+        - $ref: '#/parameters/proteinHit.minPValue'
+        - $ref: '#/parameters/proteinHit.minUniquePeptides'
+      responses:
+        '200':
+          $ref: '#/responses/PeptideIonMatchResponse'
+        '400':
+          $ref: '#/responses/BadRequestError'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+      security:
+        - jwt: []
+        - cookie: []
+  '/query/lfq/protein/{projectId}/':
+    get:
+      tags:
+        - query
+      summary: query LFQ protein feature vectors in project
+      produces:
+        - application/json
+        - application/x-protobuf
+      parameters:
+        - name: Accept
+          in: header
+          description: request format
+          type: string
+          enum:
+            - text/csv
+            - application/json
+            - application/x-protobuf
+        - name: projectId
+          in: path
+          description: id of project
+          required: true
+          type: string
+          format: uuid
+        - name: peptide
+          in: path
+          description: peptide sequence
+          required: true
+          type: string
+      responses:
+        '200':
+          $ref: '#/responses/ProteinFeatureVectorResponse'
+        '400':
+          $ref: '#/responses/BadRequestError'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+      security:
+        - jwt: []
+        - cookie: []
+  '/query/lfq/peptide/{projectId}/':
+    get:
+      tags:
+        - query
+      summary: query LFQ peptide feacture vectors project
+      produces:
+        - application/json
+        - application/x-protobuf
+      parameters:
+        - name: Accept
+          in: header
+          description: request format
+          type: string
+          enum:
+            - text/csv
+            - application/json
+            - application/x-protobuf
+        - name: projectId
+          in: path
+          description: id of project
+          required: true
+          type: string
+          format: uuid
+        - name: peptide
+          in: path
+          description: peptide sequence
+          required: true
+          type: string
+      responses:
+        '200':
+          $ref: '#/responses/PeptideFeatureVectorResponse'
+        '400':
+          $ref: '#/responses/BadRequestError'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+      security:
+        - jwt: []
+        - cookie: []
+  '/query/lfq/protein-peptide/{projectId}/':
+    get:
+      tags:
+        - query
+      summary: query LFQ support peptude feature vectors within project
+      produces:
+        - application/json
+        - application/x-protobuf
+      parameters:
+        - name: Accept
+          in: header
+          description: request format
+          type: string
+          enum:
+            - text/csv
+            - application/json
+            - application/x-protobuf
+        - name: projectId
+          in: path
+          description: id of project
+          required: true
+          type: string
+          format: uuid
+        - name: peptide
+          in: path
+          description: peptide sequence
+          required: true
+          type: string
+      responses:
+        '200':
+          $ref: '#/responses/SupportPeptideVectorResponse'
+        '400':
+          $ref: '#/responses/BadRequestError'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+      security:
+        - jwt: []
+        - cookie: []
+  '/query/lfq/feature/{projectId}/':
+    get:
+      tags:
+        - query
+      summary: query feature vectors within project
+      produces:
+        - text/csv
+        - application/json
+        - application/x-protobuf
+      parameters:
+        - name: Accept
+          in: header
+          description: request format
+          type: string
+          enum:
+            - text/csv
+            - application/json
+            - application/x-protobuf
+        - name: projectId
+          in: path
+          description: id of project
+          required: true
+          type: string
+          format: uuid
+        - name: peptide
+          in: path
+          description: peptide sequence
+          required: true
+          type: string
+      responses:
+        '200':
+          $ref: '#/responses/FeatureVectorResponse'
+        '400':
+          $ref: '#/responses/BadRequestError'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+      security:
+        - jwt: []
+        - cookie: []
+
+  '/query/filteredStatistics/{projectId}/':
+    get:
+      tags:
+        - query
+      summary: Statistics based on filter
+      produces:
+        - text/csv
+        - application/json
+        - application/x-protobuf
+      parameters:
+        - name: Accept
+          in: header
+          description: request format
+          type: string
+          enum:
+            - application/json
+            - application/x-protobuf
+        - name: projectId
+          in: path
+          description: id of project
+          required: true
+          type: string
+          format: uuid
+        - $ref: '#/parameters/fraction.ids'
+        - $ref: '#/parameters/psm.minPValue'
+        - $ref: '#/parameters/proteinHit.minPValue'
+        - $ref: '#/parameters/proteinHit.minUniquePeptides'
+      security:
+        - jwt: []
+        - cookie: []
+  /users:
+    post:
+      tags:
+        - user
+      summary: create a new user
+      description: create a new user to the system
+      operationId: createUser
+      consumes:
+        - application/json
+      produces:
+        - string
+      parameters:
+        - name: body
+          in: body
+          description: user object that needs to be added to the system
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '201':
+          description: successful operation
+          headers:
+            location:
+              description: location to access newly created user
+              type: string
+              format: url
+          schema:
+            type: string
+            description: id for the newly created user
+        '400':
+          $ref: '#/responses/BadRequestError'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+      security:
+        - jwt: []
+        - cookie: []
+    get:
+      tags:
+        - user
+      summary: find all users
+      description: find all users in the system
+      operationId: getAllUsers
+      produces:
+        - application/json
+      parameters:
+        - name: size
+          in: query
+          description: 'page size for pagination, server will use the minimum of this value and numbers of all users'
+          required: false
+          type: integer
+        - name: page
+          in: query
+          description: 'page number for pagination, starting from 0'
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/UserPageResult'
+        '400':
+          $ref: '#/responses/NotFoundError'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+      security:
+        - jwt: []
+        - cookie: []
+  '/users/{userId}':
+    get:
+      tags:
+        - user
+      summary: find user by id
+      description: find a single user by its id and return the found user
+      operationId: getUserById
+      produces:
+        - application/json
+      parameters:
+        - name: userId
+          in: path
+          description: id of the user to return
+          required: true
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: invalid user id is provided
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        '404':
+          description: no user can be found with provided id
+      security:
+        - jwt: []
+        - cookie: []
+    put:
+      tags:
+        - user
+      summary: update a user with data attached in the body
+      description: update the user specified by userId with body data
+      operationId: updateUserById
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: userId
+          in: path
+          description: id of the user to return
+          required: true
+          type: string
+          format: uuid
+        - name: body
+          in: body
+          description: user object that needs to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '200':
+          description: 'successful operation, return updated user'
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: invalid user id or body data is provided
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+      security:
+        - jwt: []
+        - cookie: []
+    delete:
+      tags:
+        - user
+      summary: delete a user from system
+      description: delete the user specified by userId
+      operationId: deleteUserById
+      parameters:
+        - name: userId
+          in: path
+          description: id of the user to return
+          required: true
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: successful operation
+        '400':
+          description: invalid user id is provided
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+      security:
+        - jwt: []
+        - cookie: []
+  /users/action/check:
+    get:
+      tags:
+        - user
+      summary: check whether the current session belongs to a user already logged in
+      description: 'return the associated user if the check succeeded, otherwise return 401'
+      operationId: checkUser
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 'successful operation, with returned user associated to current session'
+          schema:
+            $ref: '#/definitions/User'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+  /users/action/login:
+    post:
+      tags:
+        - user
+      summary: log user in to the system
+      description: log the user into the system with provided username and password
+      operationId: loginUser
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 'successful operation, return the user logged in with associated session'
+          schema:
+            $ref: '#/definitions/User'
+          headers:
+            authorization:
+              description: JWT associated with the user
+              type: string
+            set-cookie:
+              description: cookie associated with this session
+              type: string
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+  /users/action/logout:
+    post:
+      tags:
+        - user
+      summary: log user out from the system
+      description: 'if current session is associated with a user, log him out'
+      operationId: logoutUser
+      responses:
+        '204':
+          description: successful operation

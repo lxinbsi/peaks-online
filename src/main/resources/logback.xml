@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <define name="instanceId" class="com.bsi.peaks.server.LogNameDefiner">
+        <propertyLookupKey>instanceId</propertyLookupKey>
+    </define>
+    <define name="logFolder" class="com.bsi.peaks.server.LogNameDefiner">
+        <propertyLookupKey>logFolder</propertyLookupKey>
+    </define>
+    <define name="instanceType" class="com.bsi.peaks.server.LogNameDefiner">
+        <propertyLookupKey>instanceType</propertyLookupKey>
+    </define>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%-5level][%d{yyyy-MM-dd HH:mm:ss.SSS}][%c{-2}][%t] - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <if condition='property("instanceType").equalsIgnoreCase("task")'>
+            <then>
+                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                    <fileNamePattern>logs/${logFolder}/%d{yyyy-MM-dd}/${instanceId}.log</fileNamePattern>
+                    <maxHistory>60</maxHistory>
+                    <totalSizeCap>10GB</totalSizeCap>
+                </rollingPolicy>
+            </then>
+            <else>
+                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                    <fileNamePattern>logs/${logFolder}/${instanceId}.${HOSTNAME}.%d{yyyy-MM-dd}.log</fileNamePattern>
+                    <maxHistory>60</maxHistory>
+                    <totalSizeCap>10GB</totalSizeCap>
+                </rollingPolicy>
+            </else>
+        </if>
+        <encoder>
+            <pattern>[%-5level][%d{yyyy-MM-dd HH:mm:ss.SSS}][%c{-2}][%t] - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="FILE"/>
+    </appender>
+    <root level="info" includeLocation="false">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="ASYNC_FILE" />
+    </root>
+</configuration>

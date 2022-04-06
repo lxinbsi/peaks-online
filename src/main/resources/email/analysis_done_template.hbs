@@ -1,0 +1,250 @@
+<div class="peaks-content">
+    <p>Hello {{userFullName}} ({{username}}),</p>
+    <p>
+        Your analysis {{analysisName}} in project {{projectName}} has finished processing.
+        You can access the result page at <a href="{{resultURL}}" target="_blank">{{resultURL}}<a>.
+        Summary of the identification results is included below:
+    </p>
+    {{#if hasDenovo}}
+        <p>
+            <h3 style="text-align: center;">Denovo Summary</h3>
+            <table style="border: 1px solid black; border-collapse: collapse; width: 100%; max-width: 1000px; margin: auto;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid black; text-align: center;">Sample Name</th>
+                        <th style="border: 1px solid black; text-align: center;"># MS2</th>
+                        <th style="border: 1px solid black; text-align: center;"># PSM</th>
+                        <th style="border: 1px solid black; text-align: center;"># PSM (alc &gt; 30)</th>
+                        <th style="border: 1px solid black; text-align: center;"># PSM (alc &gt; 50)</th>
+                        <th style="border: 1px solid black; text-align: center;"># PSM (alc &gt; 70)</th>
+                        <th style="border: 1px solid black; text-align: center;"># PSM / # MS2</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each denovoSummary}}
+                        <tr>
+                            <td style="border: 1px solid black; text-align: left;">{{sampleName}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{ms2Count}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{psmCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{psm30Count}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{psm50Count}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{psm70Count}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{notes}}</td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </p>
+    {{/if}}
+    {{#if hasDb}}
+        <p>
+            <h3 style="text-align: center;">Database Search Summary</h3>
+            <table style="border: 1px solid black; border-collapse: collapse; width: 100%; max-width: 1000px; margin: auto;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid black; text-align: center;">Sample Name</th>
+                        <th style="border: 1px solid black; text-align: center;"># MS2</th>
+                        <th style="border: 1px solid black; text-align: center;"># PSM</th>
+                        <th style="border: 1px solid black; text-align: center;"># Peptides</th>
+                        <th style="border: 1px solid black; text-align: center;"># Sequences</th>
+                        <th style="border: 1px solid black; text-align: center;"># Proteins</th>
+                        <th style="border: 1px solid black; text-align: center;"># Protein Groups</th>
+                        <th style="border: 1px solid black; text-align: center;"># PSM / # MS2</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each dbSummary}}
+                        <tr>
+                            <td style="border: 1px solid black; text-align: left;">{{sampleName}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{ms2Count}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{psmCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{peptideCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{sequenceCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{proteinCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{proteinGroupCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{notes}}</td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </p>
+    {{/if}}
+    {{#if hasPtmFinder}}
+        <p>
+            <h3 style="text-align: center;">PTM Finder Search Summary</h3>
+            <table style="border: 1px solid black; border-collapse: collapse; width: 100%; max-width: 1000px; margin: auto;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid black; text-align: center;">Sample Name</th>
+                        <th style="border: 1px solid black; text-align: center;"># MS2</th>
+                        <th style="border: 1px solid black; text-align: center;"># PSM</th>
+                        <th style="border: 1px solid black; text-align: center;"># Peptides</th>
+                        <th style="border: 1px solid black; text-align: center;"># Sequences</th>
+                        <th style="border: 1px solid black; text-align: center;"># Proteins</th>
+                        <th style="border: 1px solid black; text-align: center;"># Protein Groups</th>
+                        <th style="border: 1px solid black; text-align: center;"># PSM / # MS2</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each ptmFinderSummary}}
+                        <tr>
+                            <td style="border: 1px solid black; text-align: left;">{{sampleName}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{ms2Count}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{psmCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{peptideCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{sequenceCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{proteinCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{proteinGroupCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{notes}}</td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </p>
+    {{/if}}
+    {{#if hasSpider}}
+        <p>
+            <h3 style="text-align: center;">Spider Search Summary</h3>
+            <table style="border: 1px solid black; border-collapse: collapse; width: 100%; max-width: 1000px; margin: auto;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid black; text-align: center;">Sample Name</th>
+                        <th style="border: 1px solid black; text-align: center;"># MS2</th>
+                        <th style="border: 1px solid black; text-align: center;"># PSM</th>
+                        <th style="border: 1px solid black; text-align: center;"># Peptides</th>
+                        <th style="border: 1px solid black; text-align: center;"># Sequences</th>
+                        <th style="border: 1px solid black; text-align: center;"># Proteins</th>
+                        <th style="border: 1px solid black; text-align: center;"># Protein Groups</th>
+                        <th style="border: 1px solid black; text-align: center;"># PSM / # MS2</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each spiderSummary}}
+                        <tr>
+                            <td style="border: 1px solid black; text-align: left;">{{sampleName}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{ms2Count}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{psmCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{peptideCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{sequenceCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{proteinCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{proteinGroupCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{notes}}</td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </p>
+    {{/if}}
+    {{#if hasSl}}
+        <p>
+            <h3 style="text-align: center;">Spectral Library Search Summary</h3>
+            <table style="border: 1px solid black; border-collapse: collapse; width: 100%; max-width: 1000px; margin: auto;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid black; text-align: center;">Sample Name</th>
+                        <th style="border: 1px solid black; text-align: center;"># MS Run</th>
+                        <th style="border: 1px solid black; text-align: center;"># MS1</th>
+                        <th style="border: 1px solid black; text-align: center;"># MS2</th>
+                        <th style="border: 1px solid black; text-align: center;"># PSM</th>
+                        <th style="border: 1px solid black; text-align: center;"># Peptides</th>
+                        <th style="border: 1px solid black; text-align: center;"># Sequences</th>
+                        <th style="border: 1px solid black; text-align: center;"># Proteins</th>
+                        <th style="border: 1px solid black; text-align: center;"># Protein Groups</th>
+                        <th style="border: 1px solid black; text-align: center;"># PSM/# MS2</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each slSummary}}
+                        <tr>
+                            <td style="border: 1px solid black; text-align: left;">{{sampleName}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{msRun}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{ms1Count}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{ms2Count}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{psmCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{peptideCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{sequenceCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{proteinCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{proteinGroupCount}}</td>
+                            <td style="border: 1px solid black; text-align: right;">{{psmCountMs2Count}}</td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </p>
+    {{/if}}
+    {{#if silacSummary}}
+        {{#with silacSummary}}
+            <p>
+                <h3 style="text-align: center;">SILAC Summary</h3>
+                <table style="border: 1px solid black; border-collapse: collapse; max-width: 1000px; margin: auto;">
+                    <tr>
+                        <th style="border: 1px solid black; text-align: left;">Feature vector groups</th>
+                        <td style="border: 1px solid black; text-align: right;">{{featureVectorGroupsCount}}</td>
+                    </tr>
+                    <tr>
+                        <th style="border: 1px solid black; text-align: left;">Feature vectors</th>
+                        <td style="border: 1px solid black; text-align: right;">{{featureVectorsCount}}</td>
+                    </tr>
+                    <tr>
+                        <th style="border: 1px solid black; text-align: left;">Features</th>
+                        <td style="border: 1px solid black; text-align: right;">{{featuresCount}}</td>
+                    </tr>
+                    <tr>
+                        <th style="border: 1px solid black; text-align: left;">Peptide Sequences</th>
+                        <td style="border: 1px solid black; text-align: right;">{{peptideSequencesCount}}</td>
+                    </tr>
+                </table>
+            </p>
+        {{/with}}
+    {{/if}}
+    {{#if lfqSummary}}
+        {{#with lfqSummary}}
+            <p>
+                <h3 style="text-align: center;">Lfq Summary</h3>
+                <table style="border: 1px solid black; border-collapse: collapse; max-width: 1000px; margin: auto;">
+                    <tr>
+                        <th style="border: 1px solid black; text-align: left;">Features</th>
+                        <td style="border: 1px solid black; text-align: right;">{{featureCount}}</td>
+                    </tr>
+                    <tr>
+                        <th style="border: 1px solid black; text-align: left;">Features with ID</th>
+                        <td style="border: 1px solid black; text-align: right;">{{featureIdCount}}</td>
+                    </tr>
+                    <tr>
+                        <th style="border: 1px solid black; text-align: left;">Feature vectors with ID</th>
+                        <td style="border: 1px solid black; text-align: right;">{{featureVectorsIdCount}}</td>
+                    </tr>
+                    <tr>
+                        <th style="border: 1px solid black; text-align: left;">Protein groups</th>
+                        <td style="border: 1px solid black; text-align: right;">{{proteinGroupCount}}</td>
+                    </tr>
+                </table>
+            </p>
+        {{/with}}
+    {{/if}}
+    {{#if riqSummary}}
+        {{#with riqSummary}}
+            <p>
+                <h3 style="text-align: center;">TMT/iTRAQ Summary</h3>
+                <table style="border: 1px solid black; border-collapse: collapse; max-width: 1000px; margin: auto;">
+                    <tr>
+                        <th style="border: 1px solid black; text-align: left;">Peptide-Spectrum Matches</th>
+                        <td style="border: 1px solid black; text-align: right;">{{psmCount}}</td>
+                    </tr>
+                    <tr>
+                        <th style="border: 1px solid black; text-align: left;">Peptide sequences</th>
+                        <td style="border: 1px solid black; text-align: right;">{{peptideSequenceCount}}</td>
+                    </tr>
+                    <tr>
+                        <th style="border: 1px solid black; text-align: left;">Protein groups</th>
+                        <td style="border: 1px solid black; text-align: right;">{{proteinGroupCount}}</td>
+                    </tr>
+                </table>
+            </p>
+        {{/with}}
+    {{/if}}
+    <p>
+        Best, <br/>
+        Peaks Online
+    </p>
+</div>

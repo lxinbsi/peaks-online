@@ -1,0 +1,7 @@
+PEAKS Online Open Source License
+
+Open sourced PEAKS Online is licensed under the GNU GENERAL PUBLIC LICENSE V3 with limited features
+mostly intended for academia usage. If you want the full version with all supported features for
+commercial usage, you can purchase from Bioinformatics Solutions Inc.
+
+GPL 3.0 license can be found at https://www.gnu.org/licenses/gpl-3.0.en.html

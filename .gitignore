@@ -1,0 +1,41 @@
+# Intellij
+.idea/
+*.iml
+*.iws
+
+# Mac
+.DS_Store
+
+# Maven
+log/
+target/
+
+# Project
+logs/
+.vertx
+
+generated/
+generated-sources/
+
+src/main/resources/application.conf
+
+file-uploads
+readers
+reader
+.peaks
+logback.debug.xml
+derby.log
+data.bin
+user.request
+/snapshots/
+/journal/
+/es/
+/*.dll
+/*.so
+/*.log
+/model_*
+/*.model
+/*.csv
+/mllib
+/thermo_*
+logo.png

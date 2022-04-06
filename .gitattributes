@@ -1,0 +1,2 @@
+* text=auto
+lib/algorithm-1.6.jar filter=lfs diff=lfs merge=lfs -text
