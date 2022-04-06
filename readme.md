@@ -3,7 +3,7 @@
 Distributed computing platform for parallel DDA/DIA 
 protein/peptide identification 
 
-Follow the instructions below to setup your own PEAKS Online server locally, 
+Follow the instructions below to setup your own PEAKS Online server, 
 or you can contact lxin@bioinfor.com to get a free account on our public 
 PEAKS Online server to try the software 
 
