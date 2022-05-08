@@ -21,7 +21,7 @@
             <artifactId>peaks-dependency</artifactId>
             <version>1.6-SNAPSHOT</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/algorithm-1.6.jar</systemPath>
+            <systemPath>${project.basedir}/lib/utilities.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.immutables</groupId>
